@@ -11,6 +11,7 @@ fichier (`data.json`). Aucune dépendance à installer, aucun compte externe.
 | `server.js` | Le serveur — sert les pages et gère les données |
 | `data.json` | Les inscriptions (créé automatiquement au premier lancement) |
 | `public/assets/` | Logos, photos et polices (tout est hébergé ici, rien ne dépend d'internet) |
+| `public/assets/qrcode.js`, `contact-qr.js` | Fabrication du QR code de la carte de visite numérique (bibliothèque libre « qrcode-generator », licence MIT, incluse) |
 
 ```
 Visiteur remplit le formulaire sur la tablette
@@ -128,6 +129,53 @@ dans la liste.
 
 ---
 
+## La carte de visite numérique (QR code)
+
+Dans **Réglages → Les commerciaux et la Direction**, saisissez pour chaque personne :
+nom, fonction, **téléphone** et email (facultatif). Le Directeur Général s'ajoute
+exactement de la même façon.
+
+- Une personne avec un numéro affiche **« QR prêt »**. Le bouton **« Voir le QR »**
+  montre le code tel que le visiteur le verra, et **« Télécharger le contact (.vcf) »**
+  permet de l'essayer sur un ordinateur.
+- Quand un visiteur choisit « Oui » à la carte de visite et sélectionne cette personne,
+  l'écran « Merci » affiche son QR code. Le visiteur ouvre l'appareil photo de son
+  téléphone, scanne, et touche « Ajouter aux contacts » : nom, fonction, société (BNETD),
+  téléphone et email sont enregistrés d'un coup. Le numéro est converti au format
+  international (`07 07 07 07 07` → `+225 07 07 07 07 07`) : il fonctionne même si le
+  visiteur appelle depuis l'étranger.
+- Le retour automatique à l'accueil passe à **45 secondes** (au lieu de 20) quand un QR
+  est affiché, pour laisser le temps de scanner.
+- Sans numéro (« Sans téléphone : pas de QR ») ou avec « Commercial disponible », il n'y a
+  pas de QR : le visiteur voit le message habituel (« carte remise au stand »).
+- Le bouton **Modifier** permet de compléter ou corriger une personne à tout moment ;
+  les tablettes prennent le changement au plus tard 2 minutes après.
+
+**À savoir :** le nom, la fonction, le téléphone et l'email des personnes *actives* sont
+envoyés aux tablettes (c'est ce qui permet de fabriquer le QR, même sans réseau). Ne saisissez
+que des coordonnées professionnelles destinées à être remises aux visiteurs, et désactivez
+(« Actif ») ou supprimez une personne qui ne doit plus être proposée.
+
+---
+
+## Dépannage
+
+- **« Impossible de contacter le serveur » / « Cette adresse ne fait tourner que des pages »**
+  Le serveur (`server.js`) n'est pas en marche à cette adresse. Ce logiciel, comme
+  l'invitation Grace & Benjamin, a besoin de `server.js` pour enregistrer les
+  inscriptions et alimenter le back-office.
+- **Ne fonctionne pas** : double-clic sur `admin.html` ou `index.html`, et hébergements
+  de pages seules (Netlify Drop, GitHub Pages…). Les pages s'affichent, mais rien ne
+  peut être enregistré ni lu.
+- **Fonctionne** : `node server.js` sur un ordinateur (adresse `http://localhost:3000`),
+  ou un hébergeur qui exécute Node.js (Render.com…).
+- **« Identifiant ou mot de passe incorrect »** : identifiant `bnetd`, mot de passe
+  `change-moi` par défaut, ou la valeur de `ADMIN_PASSWORD` si vous l'avez définie
+  (le serveur doit avoir été relancé après).
+- **Port déjà utilisé** : lancez avec un autre port (`PORT=3001 node server.js`).
+
+---
+
 ## Sécurité et données
 
 - Le back-office est protégé par mot de passe (avec limitation des tentatives).
@@ -145,7 +193,8 @@ dans la liste.
 
 - [ ] Mot de passe admin changé
 - [ ] Dates et lieu du salon vérifiés dans Réglages
-- [ ] Commerciaux ajoutés dans Réglages
+- [ ] Commerciaux et Direction ajoutés dans Réglages, avec leur numéro de téléphone
+- [ ] QR code de chaque personne testé avec un vrai téléphone (iPhone et Android si possible)
 - [ ] Chaque tablette nommée (`?tablette=1`, `?tablette=2`…) et testée avec une fausse inscription
 - [ ] Fausses inscriptions supprimées depuis le back-office
 - [ ] Test coupure Wi-Fi : une inscription faite hors ligne arrive bien après retour du réseau

@@ -175,8 +175,16 @@ function verifierAdmin(req, res) {
 /*  API                                                                */
 /* ------------------------------------------------------------------ */
 
+// Téléphone d'un contact : chiffres, +, espaces et ponctuation usuelle ; 8 à 15 chiffres (ou vide)
+function nettoyerTel(v) { return txt(v, 30).replace(/[^\d+\-().\s]/g, ''); }
+function telContactOk(t) { const n = t.replace(/\D/g, '').length; return t === '' || (n >= 8 && n <= 15); }
+
+// Les tablettes reçoivent nom, fonction, téléphone et email des contacts actifs :
+// ce sont les coordonnées destinées à être remises aux visiteurs (QR code de fin de parcours).
 function commerciauxPublics() {
-  return db.commerciaux.filter(c => c.actif).map(c => ({ id: c.id, nom: c.nom, fonction: c.fonction || '' }));
+  return db.commerciaux.filter(c => c.actif).map(c => ({
+    id: c.id, nom: c.nom, fonction: c.fonction || '', telephone: c.telephone || '', email: c.email || ''
+  }));
 }
 
 function creerInscription(b) {
@@ -296,7 +304,11 @@ async function api(req, res, p) {
     let b; try { b = await lireCorps(req); } catch (e) { return json(res, e.code || 400, { ok: false, erreur: 'Requête invalide' }); }
     const nom = txt(b.nom, 100);
     if (nom.length < 2) return json(res, 400, { ok: false, erreur: 'Le nom est obligatoire' });
-    const c = { id: 'c_' + crypto.randomBytes(4).toString('hex'), nom, fonction: txt(b.fonction, 100), actif: true };
+    const telephone = nettoyerTel(b.telephone);
+    const email = txt(b.email, 120).toLowerCase();
+    if (!telContactOk(telephone)) return json(res, 400, { ok: false, erreur: 'Numéro de téléphone invalide (8 à 15 chiffres)' });
+    if (email && !EMAIL_RE.test(email)) return json(res, 400, { ok: false, erreur: 'Adresse email invalide' });
+    const c = { id: 'c_' + crypto.randomBytes(4).toString('hex'), nom, fonction: txt(b.fonction, 100), telephone, email, actif: true };
     db.commerciaux.push(c);
     sauvegarder();
     return json(res, 200, { ok: true, commercial: c });
@@ -310,6 +322,16 @@ async function api(req, res, p) {
       if (typeof b.actif === 'boolean') c.actif = b.actif;
       if (typeof b.nom === 'string' && txt(b.nom, 100).length >= 2) c.nom = txt(b.nom, 100);
       if (typeof b.fonction === 'string') c.fonction = txt(b.fonction, 100);
+      if (typeof b.telephone === 'string') {
+        const t = nettoyerTel(b.telephone);
+        if (!telContactOk(t)) return json(res, 400, { ok: false, erreur: 'Numéro de téléphone invalide (8 à 15 chiffres)' });
+        c.telephone = t;
+      }
+      if (typeof b.email === 'string') {
+        const e = txt(b.email, 120).toLowerCase();
+        if (e && !EMAIL_RE.test(e)) return json(res, 400, { ok: false, erreur: 'Adresse email invalide' });
+        c.email = e;
+      }
       sauvegarder();
       return json(res, 200, { ok: true, commercial: c });
     }
