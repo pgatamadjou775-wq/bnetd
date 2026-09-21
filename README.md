@@ -11,6 +11,8 @@ fichier (`data.json`). Aucune dépendance à installer, aucun compte externe.
 | `server.js` | Le serveur — sert les pages et gère les données |
 | `data.json` | Les inscriptions (créé automatiquement au premier lancement) |
 | `public/assets/` | Logos, photos et polices (tout est hébergé ici, rien ne dépend d'internet) |
+| `public/assets/realisations.js` | Le contenu des pages « Réalisations » : textes, chiffres, rôle du BNETD, photos (à modifier ici) |
+| `public/assets/realisations/` | Les photos des réalisations |
 | `public/assets/qrcode.js`, `contact-qr.js` | Fabrication du QR code de la carte de visite numérique (bibliothèque libre « qrcode-generator », licence MIT, incluse) |
 
 ```
@@ -129,6 +131,50 @@ dans la liste.
 
 ---
 
+## Les pages « Réalisations »
+
+Sur l'écran d'accueil, chaque réalisation (Pont HKB, Autoroute Abidjan–Grand-Bassam,
+Hôpital Moscati, Stade d'Ebimpé, Université de Man) est un bouton. Le visiteur le touche et
+arrive sur une page **dans l'application** : photo, présentation, chiffres clés et **le rôle
+du BNETD** sur le projet. Il passe d'une réalisation à l'autre avec les flèches, les vignettes
+ou en glissant le doigt, et revient avec « Retour » ou « S'enregistrer ». Après 60 secondes sans
+toucher l'écran, la tablette revient toute seule à l'accueil.
+
+**Tout le contenu est dans `public/assets/realisations.js`** (un simple fichier texte, avec le
+mode d'emploi en commentaire au début) :
+- corriger un texte, un chiffre ou le rôle du BNETD ;
+- **ajouter des photos** : copiez-les dans `public/assets/realisations/` et ajoutez une ligne dans
+  la liste `photos` de la réalisation. Avec plusieurs photos, un diaporama apparaît
+  automatiquement (flèches + points) ;
+- ajouter une réalisation : copiez un bloc existant et changez ses champs.
+Rechargez ensuite la page de la tablette.
+
+**Photos :** les cinq photos fournies mesuraient environ 550 × 350 px, ce qui est petit pour une
+tablette. Elles ont été agrandies et adoucies pour rester agréables, mais des originaux d'au moins
+1600 px de large (JPG, moins de 400 Ko) seront nettement plus nets : remplacez simplement les
+fichiers en gardant le même nom. Le stade est une vue d'artiste (perspective), pas une photo.
+
+**À faire valider par le BNETD avant le salon.** Les textes ont été rédigés à partir de pages
+publiques (la liste figure sous chaque réalisation, dans le champ `sources` de
+`realisations.js`), pas de documents internes du BNETD. Vérifiez en particulier le **rôle du BNETD**
+sur chaque projet et les chiffres :
+
+| Réalisation | Rôle du BNETD affiché | Chiffres affichés |
+|---|---|---|
+| Pont HKB | Ingénieur du concédant (représentation technique de l'État) | Inauguré déc. 2014, 7 km de viaduc et voies d'accès, 80 000 véhicules/jour, 270 M€ |
+| Autoroute Abidjan–Grand-Bassam | Contrôle des travaux, pour l'AGEROUTE | 2 × 3 voies, 71,6 Md FCFA (TTC) |
+| Hôpital Moscati | Mandaté pour accélérer et achever le chantier, suivi et contrôle des travaux | Ouvert janv. 2015, 200 lits, plus de 20 000 m² |
+| Stade d'Ebimpé | Suivi et contrôle externe des travaux ; associé à l'étude de la Cité Olympique | 60 012 places, travaux déc. 2016, inauguré oct. 2020 |
+| Université de Man | Maître d'œuvre du campus ; contribution au Programme de décentralisation des universités | 113 ha, 2 × 530 places d'amphithéâtre, 20 000 étudiants à terme |
+
+Les sources publiques ne donnent pas toujours le même chiffre (par exemple le coût de
+l'autoroute varie d'une page à l'autre) : le BNETD a les chiffres de référence.
+
+Les photos ne sont mises en mémoire par la tablette qu'une fois affichées ; si le serveur
+tombe en plein salon, ouvrez chaque page une fois au préalable.
+
+---
+
 ## La carte de visite numérique (QR code)
 
 Dans **Réglages → Les commerciaux et la Direction**, saisissez pour chaque personne :
@@ -199,3 +245,4 @@ que des coordonnées professionnelles destinées à être remises aux visiteurs,
 - [ ] Fausses inscriptions supprimées depuis le back-office
 - [ ] Test coupure Wi-Fi : une inscription faite hors ligne arrive bien après retour du réseau
 - [ ] Export CSV testé dans Excel
+- [ ] Pages « Réalisations » relues et validées par le BNETD (rôle, chiffres, photos les plus nettes possibles)
