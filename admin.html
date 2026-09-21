@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#082D6B">
+<meta name="robots" content="noindex,nofollow">
+<title>Back-office — Salon BNETD</title>
+<link rel="icon" href="assets/favicon.png">
+<style>
+@font-face{font-family:"Fraunces";src:url("assets/fonts/fraunces.woff2") format("woff2");font-weight:100 900;font-display:swap}
+@font-face{font-family:"Figtree";src:url("assets/fonts/figtree.woff2") format("woff2");font-weight:300 900;font-display:swap}
+
+:root{
+  --bleu:#082D6B; --bleu-nuit:#061F4A; --bleu-vif:#1E6FD9; --ciel:#EAF1FA; --ligne:#C5D3E8;
+  --texte:#0E2A5E; --gris:#52668C; --orange:#F5A623; --vert:#1F8A4C; --rouge:#B3261E;
+  --serif:"Fraunces",Georgia,"Times New Roman",serif;
+  --sans:"Figtree","Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
+}
+*{box-sizing:border-box}
+[hidden]{display:none !important}
+body{margin:0;background:var(--ciel);color:var(--texte);font-family:var(--sans);font-size:16px;line-height:1.45}
+h1,h2,h3{font-family:var(--serif);font-weight:700;line-height:1.15;margin:0}
+p{margin:0}
+:focus-visible{outline:3px solid var(--bleu-vif);outline-offset:2px}
+
+/* ---------- Boutons et champs ---------- */
+.btn{font:inherit;font-weight:600;font-size:15px;min-height:42px;padding:0 16px;border-radius:10px;border:1.5px solid var(--ligne);background:#fff;color:var(--bleu);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap}
+.btn:hover{border-color:var(--bleu)}
+.btn.principal{background:var(--bleu);border-color:var(--bleu);color:#fff}
+.btn.principal:hover{background:var(--bleu-nuit)}
+.btn.orange{background:var(--orange);border-color:var(--orange);color:var(--bleu-nuit)}
+.btn.danger{color:var(--rouge);border-color:#E7B9B5}
+.btn.danger.confirme{background:var(--rouge);border-color:var(--rouge);color:#fff}
+.btn.petit{min-height:34px;padding:0 12px;font-size:14px}
+input[type=text],input[type=password],input[type=search],input[type=date],input[type=datetime-local],select{
+  font:inherit;font-size:15px;color:var(--texte);min-height:42px;padding:0 12px;border:1.5px solid var(--ligne);border-radius:10px;background:#fff;min-width:0
+}
+input:focus,select:focus{outline:none;border-color:var(--bleu-vif);box-shadow:0 0 0 3px rgba(30,111,217,.2)}
+.f{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600;color:var(--gris)}
+
+/* ---------- Connexion ---------- */
+.login{min-height:100vh;min-height:100dvh;display:grid;place-items:center;background:var(--bleu);padding:24px}
+.login-box{background:#fff;border-radius:20px;padding:36px 32px;width:100%;max-width:420px}
+.login-box img{height:46px;margin-bottom:22px}
+.login-box h1{font-size:28px;margin-bottom:6px}
+.login-box .sous{color:var(--gris);margin-bottom:22px}
+.login-box form{display:grid;gap:16px}
+.login-box input{width:100%;font-size:17px;min-height:50px}
+.login-box .btn{min-height:50px;font-size:17px}
+.msg-erreur{color:var(--rouge);font-weight:600;font-size:15px}
+.msg-erreur:empty{display:none}
+
+/* ---------- En-tête ---------- */
+.entete{background:var(--bleu);color:#fff;display:flex;align-items:center;gap:20px;padding:14px clamp(16px,3vw,40px);position:sticky;top:0;z-index:10;flex-wrap:wrap}
+.entete img{height:34px}
+.entete .titre{flex:1 1 260px;min-width:0}
+.entete h1{font-size:22px}
+.entete .per{font-size:14px;opacity:.82}
+.entete .btn{background:transparent;color:#fff;border-color:rgba(255,255,255,.4)}
+.entete .btn:hover{border-color:#fff}
+.entete .btns{display:flex;gap:10px;flex-wrap:wrap}
+.bandeau-alerte{background:#FFF1D6;color:#6B4200;padding:10px clamp(16px,3vw,40px);font-weight:600;font-size:15px}
+
+/* ---------- Page ---------- */
+.page{max-width:1440px;margin:0 auto;padding:24px clamp(16px,3vw,40px) 64px;display:grid;gap:24px}
+.panneau{background:#fff;border-radius:16px;padding:24px;box-shadow:0 18px 36px -30px rgba(8,45,107,.5)}
+.panneau h2{font-size:22px;margin-bottom:16px}
+
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);padding:8px 0}
+.kpi{padding:14px 28px;border-left:1px solid var(--ciel)}
+.kpi:first-child{border-left:0}
+.kpi .n{font-family:var(--serif);font-weight:800;font-size:clamp(34px,4vw,52px);line-height:1;color:var(--bleu)}
+.kpi .n small{font-family:var(--sans);font-size:18px;font-weight:600;color:var(--gris)}
+.kpi .l{margin-top:8px;font-weight:700}
+.kpi .d{font-size:14px;color:var(--gris)}
+
+.graphes{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:24px}
+.cat-ligne{display:grid;grid-template-columns:minmax(150px,42%) 1fr auto;align-items:center;gap:12px;padding:7px 0}
+.cat-ligne .nom{font-size:15px;line-height:1.25}
+.piste{height:14px;background:var(--ciel);border-radius:7px;overflow:hidden}
+.piste i{display:block;height:100%;background:var(--bleu-vif);border-radius:7px;min-width:0}
+.cat-ligne .val{font-weight:700;font-size:15px;min-width:64px;text-align:right}
+.cat-ligne .val span{font-weight:400;color:var(--gris)}
+.tete-graphe{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.tete-graphe h2{margin:0}
+.bascule{display:inline-flex;border:1.5px solid var(--ligne);border-radius:10px;overflow:hidden}
+.bascule button{font:inherit;font-weight:600;font-size:14px;min-height:38px;padding:0 14px;border:0;background:#fff;color:var(--gris);cursor:pointer}
+.bascule button[aria-pressed="true"]{background:var(--bleu);color:#fff}
+.graphe svg{width:100%;height:auto;display:block}
+.graphe .b{fill:var(--bleu-vif)}
+.graphe .b.max{fill:var(--orange)}
+.graphe .t{font:600 12px var(--sans);fill:var(--gris)}
+.graphe .v{font:700 13px var(--sans);fill:var(--texte)}
+.graphe .g{stroke:var(--ciel);stroke-width:1}
+.graphe .vide{font:500 15px var(--sans);fill:var(--gris)}
+
+/* ---------- Liste ---------- */
+.filtres{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;margin-bottom:16px}
+.filtres .f-q{flex:1 1 240px}
+.filtres .f-q input{width:100%}
+details.multi{position:relative}
+details.multi summary{list-style:none;cursor:pointer;min-height:42px;display:flex;align-items:center;gap:8px;padding:0 12px;border:1.5px solid var(--ligne);border-radius:10px;background:#fff;font-size:15px;min-width:200px;justify-content:space-between}
+details.multi summary::-webkit-details-marker{display:none}
+details.multi summary::after{content:"";width:8px;height:8px;border-right:2px solid var(--bleu);border-bottom:2px solid var(--bleu);transform:rotate(45deg) translateY(-2px)}
+details.multi[open] summary{border-color:var(--bleu-vif)}
+details.multi .menu{position:absolute;z-index:5;top:calc(100% + 6px);left:0;min-width:300px;background:#fff;border:1.5px solid var(--ligne);border-radius:12px;padding:10px;box-shadow:0 18px 36px -18px rgba(8,45,107,.5);display:grid;gap:2px}
+details.multi label{display:flex;gap:10px;align-items:center;padding:7px 8px;border-radius:8px;cursor:pointer;font-size:15px}
+details.multi label:hover{background:var(--ciel)}
+details.multi input{width:18px;height:18px;accent-color:var(--bleu)}
+.compte{font-size:15px;color:var(--gris);margin:0 0 12px}
+.tableau{overflow-x:auto;border:1px solid var(--ciel);border-radius:12px}
+table{width:100%;border-collapse:collapse;font-size:15px;min-width:1080px}
+th{text-align:left;font-weight:700;font-size:14px;color:var(--gris);padding:12px 14px;border-bottom:2px solid var(--ciel);background:#fff;white-space:nowrap}
+td{padding:12px 14px;border-bottom:1px solid var(--ciel);vertical-align:top}
+tbody tr{cursor:pointer}
+tbody tr:hover td{background:#F5F9FE}
+td.nom{font-weight:700}
+td.date{white-space:nowrap;color:var(--gris)}
+td.tel{white-space:nowrap}
+td.com{max-width:260px;color:var(--gris)}
+td.com div{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:260px}
+.badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:13px;font-weight:700;white-space:nowrap}
+.badge.oui{background:#DDEBFD;color:var(--bleu)}
+.badge.att{background:#FFEBC7;color:#7A4B00}
+.muted{color:var(--gris)}
+.vide-etat{padding:44px 16px;text-align:center;color:var(--gris);font-size:17px}
+.plus{display:flex;justify-content:center;margin-top:16px}
+
+/* ---------- Dialogues ---------- */
+dialog{border:0;border-radius:20px;padding:28px;width:calc(100% - 24px);max-width:640px;color:var(--texte);background:#fff;font-family:var(--sans);max-height:calc(100dvh - 32px)}
+dialog::backdrop{background:rgba(6,31,74,.7)}
+dialog h2{font-size:26px;margin-bottom:16px}
+dialog h3{font-size:19px;margin:24px 0 10px}
+.dl{display:grid;gap:0;margin:0}
+.dl div{display:grid;grid-template-columns:150px 1fr;gap:12px;padding:10px 0;border-bottom:1px solid var(--ciel)}
+.dl dt{color:var(--gris);font-size:14px;padding-top:2px}
+.dl dd{margin:0;font-weight:600;overflow-wrap:anywhere;white-space:pre-line}
+.pied-dlg{display:flex;justify-content:space-between;gap:12px;margin-top:22px;flex-wrap:wrap}
+.form-ligne{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end}
+.form-ligne .f{flex:1 1 150px}
+.form-ligne input{width:100%}
+.comm{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--ciel)}
+.comm .nom{font-weight:700}
+.comm .sub{font-size:14px;color:var(--gris)}
+.interrupteur{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:var(--gris);cursor:pointer}
+.interrupteur input{width:20px;height:20px;accent-color:var(--bleu)}
+.aide{font-size:14px;color:var(--gris);margin-top:8px}
+
+@media (max-width:1000px){
+  .graphes{grid-template-columns:1fr}
+  .kpis{grid-template-columns:1fr 1fr}
+  .kpi:nth-child(3){border-left:0}
+}
+@media (max-width:560px){
+  .kpis{grid-template-columns:1fr}
+  .kpi{border-left:0;border-top:1px solid var(--ciel)}
+  .kpi:first-child{border-top:0}
+  .cat-ligne{grid-template-columns:1fr auto}
+  .cat-ligne .piste{grid-column:1/-1;order:3}
+  .dl div{grid-template-columns:1fr}
+  .comm{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= Connexion ================= -->
+<div class="login" id="ecran-login">
+  <div class="login-box">
+    <img src="assets/logo-bleu.png" alt="BNETD">
+    <h1>Espace équipe</h1>
+    <p class="sous">Back-office du salon. Accès réservé à l’équipe BNETD.</p>
+    <form id="form-login" autocomplete="on">
+      <label class="f">Identifiant
+        <input id="l-user" type="text" autocomplete="username" autocapitalize="none" required>
+      </label>
+      <label class="f">Mot de passe
+        <input id="l-pass" type="password" autocomplete="current-password" required>
+      </label>
+      <p class="msg-erreur" id="l-err" role="alert"></p>
+      <button class="btn orange" type="submit" id="l-btn">Se connecter</button>
+    </form>
+  </div>
+</div>
+
+<!-- ================= Application ================= -->
+<div id="app" hidden>
+  <header class="entete">
+    <img src="assets/logo-blanc.png" alt="BNETD">
+    <div class="titre">
+      <h1 id="h-salon">Salon</h1>
+      <p class="per" id="h-periode"></p>
+    </div>
+    <div class="btns">
+      <button class="btn" id="btn-actualiser" type="button">Actualiser</button>
+      <button class="btn" id="btn-reglages" type="button">Réglages</button>
+      <button class="btn" id="btn-quitter" type="button">Déconnexion</button>
+    </div>
+  </header>
+  <div class="bandeau-alerte" id="alerte" hidden></div>
+
+  <main class="page">
+    <section class="panneau kpis" aria-label="Chiffres clés">
+      <div class="kpi"><div class="n" id="k-total">0</div><div class="l">Inscrits</div><div class="d" id="k-total-d"></div></div>
+      <div class="kpi"><div class="n" id="k-jour">0</div><div class="l">Aujourd’hui</div><div class="d" id="k-jour-d"></div></div>
+      <div class="kpi"><div class="n" id="k-cartes">0</div><div class="l">Cartes de visite demandées</div><div class="d" id="k-cartes-d"></div></div>
+      <div class="kpi"><div class="n" id="k-derniere" style="font-size:clamp(26px,3vw,38px)">—</div><div class="l">Dernière inscription</div><div class="d" id="k-derniere-d"></div></div>
+    </section>
+
+    <div class="graphes">
+      <section class="panneau" aria-labelledby="h-cat">
+        <h2 id="h-cat">Répartition par catégorie</h2>
+        <div id="cats"></div>
+      </section>
+      <section class="panneau" aria-labelledby="h-aff">
+        <div class="tete-graphe">
+          <h2 id="h-aff">Affluence</h2>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+            <select id="g-jour" aria-label="Jour affiché"></select>
+            <div class="bascule" role="group" aria-label="Type d’affluence">
+              <button type="button" id="g-heure" aria-pressed="true">Par heure</button>
+              <button type="button" id="g-jours" aria-pressed="false">Par jour</button>
+            </div>
+          </div>
+        </div>
+        <div class="graphe" id="graphe"></div>
+        <p class="aide">En orange : le pic d’affluence.</p>
+      </section>
+    </div>
+
+    <section class="panneau" aria-labelledby="h-liste">
+      <div class="tete-graphe">
+        <h2 id="h-liste">Liste des inscrits</h2>
+        <button class="btn orange" id="btn-export" type="button">Exporter en CSV (Excel)</button>
+      </div>
+      <div class="filtres">
+        <label class="f f-q">Recherche
+          <input id="f-q" type="search" placeholder="Nom, téléphone, société, email…" autocomplete="off">
+        </label>
+        <div class="f f-cat">Catégorie
+          <details class="multi" id="f-cats"><summary id="f-cats-txt">Toutes</summary><div class="menu" id="f-cats-menu"></div></details>
+        </div>
+        <label class="f">Commercial
+          <select id="f-com"></select>
+        </label>
+        <label class="f">Tablette
+          <select id="f-tab"></select>
+        </label>
+        <label class="f">Du
+          <input id="f-du" type="datetime-local">
+        </label>
+        <label class="f">Au
+          <input id="f-au" type="datetime-local">
+        </label>
+        <button class="btn" id="f-reset" type="button">Réinitialiser</button>
+      </div>
+      <p class="compte" id="compte" aria-live="polite"></p>
+      <div class="tableau">
+        <table>
+          <thead>
+            <tr><th>Nom complet</th><th>Téléphone</th><th>Email</th><th>Catégorie</th><th>Société</th><th>Carte de visite</th><th>Date et heure</th><th>Commentaires</th></tr>
+          </thead>
+          <tbody id="corps"></tbody>
+        </table>
+        <div class="vide-etat" id="vide" hidden></div>
+      </div>
+      <div class="plus" id="plus" hidden><button class="btn" id="btn-plus" type="button"></button></div>
+    </section>
+  </main>
+</div>
+
+<!-- ================= Détail d'une inscription ================= -->
+<dialog id="dlg-detail" aria-labelledby="dd-titre">
+  <h2 id="dd-titre">Inscription</h2>
+  <dl class="dl" id="dd-liste"></dl>
+  <div class="pied-dlg">
+    <button class="btn danger" id="dd-suppr" type="button">Supprimer cette inscription</button>
+    <button class="btn principal" id="dd-fermer" type="button">Fermer</button>
+  </div>
+  <p class="msg-erreur" id="dd-err" role="alert" style="margin-top:10px"></p>
+</dialog>
+
+<!-- ================= Réglages ================= -->
+<dialog id="dlg-reglages" aria-labelledby="rg-titre">
+  <h2 id="rg-titre">Réglages</h2>
+
+  <h3>Le salon</h3>
+  <form id="form-salon">
+    <div class="form-ligne">
+      <label class="f" style="flex-basis:100%">Nom du salon
+        <input id="s-nom" type="text" maxlength="120" required>
+      </label>
+      <label class="f" style="flex-basis:100%">Lieu
+        <input id="s-lieu" type="text" maxlength="160" placeholder="Ex : Parc des Expositions d’Abidjan">
+      </label>
+      <label class="f">Premier jour
+        <input id="s-debut" type="date" required>
+      </label>
+      <label class="f">Dernier jour
+        <input id="s-fin" type="date" required>
+      </label>
+      <button class="btn principal" type="submit">Enregistrer</button>
+    </div>
+    <p class="msg-erreur" id="s-err" role="alert" style="margin-top:8px"></p>
+    <p class="aide" id="s-ok"></p>
+  </form>
+
+  <h3>Les commerciaux</h3>
+  <p class="aide" style="margin:0 0 6px">Les commerciaux actifs sont proposés aux visiteurs qui souhaitent une carte de visite. Sans commercial, l’option « Commercial disponible » est proposée.</p>
+  <div id="rg-commerciaux"></div>
+  <form id="form-com" style="margin-top:16px">
+    <div class="form-ligne">
+      <label class="f">Nom complet
+        <input id="c-nom" type="text" maxlength="100" required>
+      </label>
+      <label class="f">Fonction (optionnel)
+        <input id="c-fonction" type="text" maxlength="100">
+      </label>
+      <button class="btn principal" type="submit">Ajouter</button>
+    </div>
+    <p class="msg-erreur" id="c-err" role="alert" style="margin-top:8px"></p>
+  </form>
+
+  <div class="pied-dlg" style="justify-content:flex-end">
+    <button class="btn principal" id="rg-fermer" type="button">Fermer</button>
+  </div>
+</dialog>
+
+<script>
+(function () {
+  'use strict';
+
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  var pad = function (n) { return (n < 10 ? '0' : '') + n; };
+  var esc = function (s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  };
+  var norm = function (s) { return String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); };
+  var MOIS_COURT = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
+
+  var D = { salon: {}, categories: [], commerciaux: [], inscriptions: [] };
+  var creds = null;
+  var F = { q: '', cats: {}, com: '', tab: '', du: '', au: '' };
+  var vue = 'heure', jourChoisi = null, limite = 100, courant = null, minuteur = null, derniereMaj = null;
+
+  /* ---------- Réseau ---------- */
+  function encoder(s) { return btoa(unescape(encodeURIComponent(s))); }
+  function api(url, opts) {
+    opts = opts || {};
+    var h = { 'Authorization': 'Basic ' + creds };
+    if (opts.body) h['Content-Type'] = 'application/json';
+    return fetch(url, { method: opts.method || 'GET', headers: h, body: opts.body, cache: 'no-store' }).then(function (r) {
+      return r.json().catch(function () { return null; }).then(function (data) {
+        if (r.status === 401 && url !== '/api/auth') { deconnecter(); }
+        if (!r.ok) { var e = new Error((data && data.erreur) || 'Erreur ' + r.status); e.status = r.status; throw e; }
+        return data;
+      });
+    });
+  }
+
+  /* ---------- Connexion ---------- */
+  $('#form-login').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var btn = $('#l-btn'), err = $('#l-err');
+    creds = encoder($('#l-user').value.trim() + ':' + $('#l-pass').value);
+    btn.disabled = true; btn.textContent = 'Connexion…'; err.textContent = '';
+    api('/api/auth').then(function () {
+      try { sessionStorage.setItem('bnetd_admin', creds); } catch (x) {}
+      demarrer();
+    }).catch(function (x) {
+      err.textContent = x.status === 401 || x.status === 429 ? x.message : 'Impossible de contacter le serveur.';
+      creds = null;
+    }).then(function () { btn.disabled = false; btn.textContent = 'Se connecter'; });
+  });
+
+  function deconnecter() {
+    try { sessionStorage.removeItem('bnetd_admin'); } catch (x) {}
+    creds = null; clearInterval(minuteur);
+    $('#app').hidden = true; $('#ecran-login').hidden = false;
+    $('#l-pass').value = '';
+  }
+  $('#btn-quitter').addEventListener('click', deconnecter);
+
+  function demarrer() {
+    $('#ecran-login').hidden = true; $('#app').hidden = false;
+    charger();
+    clearInterval(minuteur);
+    minuteur = setInterval(function () { if (!document.hidden) charger(true); }, 15000);
+  }
+
+  /* ---------- Données ---------- */
+  function charger(silencieux) {
+    return api('/api/admin').then(function (d) {
+      D = d; derniereMaj = new Date();
+      $('#alerte').hidden = true;
+      rendreTout();
+    }).catch(function (e) {
+      if (e.status === 401) return;
+      var a = $('#alerte');
+      a.textContent = 'Connexion au serveur perdue. Les chiffres affichés datent de ' +
+        (derniereMaj ? pad(derniereMaj.getHours()) + ':' + pad(derniereMaj.getMinutes()) : 'l’ouverture de la page') + '. Nouvel essai automatique.';
+      a.hidden = false;
+    });
+  }
+  $('#btn-actualiser').addEventListener('click', function () { charger(); });
+
+  /* ---------- Outils de date ---------- */
+  function jourCle(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+  function jourLibelle(cle) { var p = cle.split('-'); return Number(p[2]) + ' ' + MOIS_COURT[Number(p[1]) - 1]; }
+  function heureTexte(d) { return pad(d.getHours()) + ':' + pad(d.getMinutes()); }
+  function dateHeure(iso) { var d = new Date(iso); return pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + ' à ' + heureTexte(d); }
+  function periode(d, f) {
+    if (!d) return '';
+    var a = new Date(d + 'T12:00:00'), b = new Date((f || d) + 'T12:00:00');
+    var mois = function (x) { return x.toLocaleDateString('fr-FR', { month: 'long' }); };
+    if (!f || f === d) return 'le ' + a.getDate() + ' ' + mois(a) + ' ' + a.getFullYear();
+    if (a.getMonth() === b.getMonth() && a.getFullYear() === b.getFullYear()) return 'du ' + a.getDate() + ' au ' + b.getDate() + ' ' + mois(b) + ' ' + b.getFullYear();
+    return 'du ' + a.getDate() + ' ' + mois(a) + ' au ' + b.getDate() + ' ' + mois(b) + ' ' + b.getFullYear();
+  }
+  function ilYA(d) {
+    var m = Math.round((Date.now() - d.getTime()) / 60000);
+    if (m < 1) return 'à l’instant';
+    if (m < 60) return 'il y a ' + m + ' min';
+    var h = Math.floor(m / 60);
+    if (h < 24) return 'il y a ' + h + ' h';
+    return 'le ' + dateHeure(d.toISOString());
+  }
+  function libCat(code) {
+    var c = D.categories.filter(function (x) { return x.code === code; })[0];
+    return c ? c.libelle : code;
+  }
+
+  /* ---------- Rendu global ---------- */
+  function rendreTout() {
+    var s = D.salon || {};
+    $('#h-salon').textContent = 'Salon — ' + (s.nom || '');
+    $('#h-periode').textContent = [periode(s.debut, s.fin), s.lieu].filter(Boolean).join(', ');
+    document.title = 'Back-office — ' + (s.nom || 'Salon BNETD');
+    rendreKpis(); rendreCategories(); rendreSelecteurJour(); rendreGraphe(); rendreFiltres(); rendreListe();
+  }
+
+  function rendreKpis() {
+    var rows = D.inscriptions, n = rows.length, auj = jourCle(new Date());
+    var jour = rows.filter(function (r) { return jourCle(new Date(r.horodatage)) === auj; }).length;
+    var cartes = rows.filter(function (r) { return r.carte_visite; });
+    var attribuer = cartes.filter(function (r) { return !r.commercial_nom; }).length;
+    $('#k-total').textContent = n;
+    $('#k-total-d').textContent = n ? 'depuis le début du salon' : 'aucune inscription pour l’instant';
+    $('#k-jour').textContent = jour;
+    $('#k-jour-d').textContent = jourLibelle(auj);
+    $('#k-cartes').textContent = cartes.length;
+    $('#k-cartes-d').textContent = (n ? Math.round(cartes.length * 100 / n) + ' % des inscrits' : '—') + (attribuer ? ', ' + attribuer + ' à attribuer' : '');
+    if (n) {
+      var d = new Date(rows[0].horodatage);
+      $('#k-derniere').textContent = heureTexte(d);
+      $('#k-derniere-d').textContent = ilYA(d) + ', ' + rows[0].tablette;
+    } else { $('#k-derniere').textContent = '—'; $('#k-derniere-d').textContent = ''; }
+  }
+
+  function rendreCategories() {
+    var n = D.inscriptions.length, cnt = {};
+    D.inscriptions.forEach(function (r) { cnt[r.categorie] = (cnt[r.categorie] || 0) + 1; });
+    var max = Math.max.apply(null, [1].concat(Object.keys(cnt).map(function (k) { return cnt[k]; })));
+    $('#cats').innerHTML = D.categories.map(function (c) {
+      var v = cnt[c.code] || 0;
+      return '<div class="cat-ligne"><span class="nom">' + esc(c.libelle) + '</span>' +
+        '<span class="piste"><i style="width:' + (v * 100 / max) + '%"></i></span>' +
+        '<span class="val">' + v + ' <span>' + (n ? Math.round(v * 100 / n) : 0) + ' %</span></span></div>';
+    }).join('');
+  }
+
+  /* ---------- Affluence ---------- */
+  function joursDisponibles() {
+    var set = {};
+    D.inscriptions.forEach(function (r) { set[jourCle(new Date(r.horodatage))] = 1; });
+    var s = D.salon || {};
+    if (s.debut && s.fin) {
+      var a = new Date(s.debut + 'T12:00:00'), b = new Date(s.fin + 'T12:00:00'), k = 0;
+      while (a <= b && k++ < 31) { set[jourCle(a)] = 1; a.setDate(a.getDate() + 1); }
+    }
+    return Object.keys(set).sort();
+  }
+  function rendreSelecteurJour() {
+    var jours = joursDisponibles(), sel = $('#g-jour');
+    if (!jours.length) jours = [jourCle(new Date())];
+    if (!jourChoisi || jours.indexOf(jourChoisi) < 0) {
+      var auj = jourCle(new Date());
+      jourChoisi = D.inscriptions.length ? jourCle(new Date(D.inscriptions[0].horodatage)) : (jours.indexOf(auj) >= 0 ? auj : jours[0]);
+    }
+    sel.innerHTML = jours.map(function (j) { return '<option value="' + j + '"' + (j === jourChoisi ? ' selected' : '') + '>' + jourLibelle(j) + '</option>'; }).join('');
+    sel.hidden = vue !== 'heure';
+  }
+  $('#g-jour').addEventListener('change', function () { jourChoisi = this.value; rendreGraphe(); });
+  $('#g-heure').addEventListener('click', function () { vue = 'heure'; $('#g-jour').hidden = false; basculer(); });
+  $('#g-jours').addEventListener('click', function () { vue = 'jours'; $('#g-jour').hidden = true; basculer(); });
+  function basculer() {
+    $('#g-heure').setAttribute('aria-pressed', vue === 'heure');
+    $('#g-jours').setAttribute('aria-pressed', vue === 'jours');
+    rendreGraphe();
+  }
+
+  function colonnes(items) {   // items : [{lib, v}]
+    var W = 640, H = 250, gauche = 8, bas = 30, haut = 26;
+    var max = Math.max.apply(null, [1].concat(items.map(function (i) { return i.v; })));
+    var total = items.reduce(function (a, i) { return a + i.v; }, 0);
+    var pas = (W - gauche * 2) / items.length, larg = Math.min(pas * 0.62, 46);
+    var out = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Histogramme des inscriptions">';
+    out += '<line class="g" x1="0" x2="' + W + '" y1="' + (H - bas) + '" y2="' + (H - bas) + '"/>';
+    items.forEach(function (it, i) {
+      var h = (H - bas - haut) * it.v / max, x = gauche + i * pas + (pas - larg) / 2, y = H - bas - h;
+      if (it.v) out += '<rect class="b' + (it.v === max ? ' max' : '') + '" x="' + x + '" y="' + y + '" width="' + larg + '" height="' + h + '" rx="4"><title>' + esc(it.lib) + ' : ' + it.v + '</title></rect>' +
+        '<text class="v" x="' + (x + larg / 2) + '" y="' + (y - 6) + '" text-anchor="middle">' + it.v + '</text>';
+      out += '<text class="t" x="' + (x + larg / 2) + '" y="' + (H - 10) + '" text-anchor="middle">' + esc(it.lib) + '</text>';
+    });
+    if (!total) out += '<text class="vide" x="' + W / 2 + '" y="' + (H / 2 - 10) + '" text-anchor="middle">Aucune inscription sur cette période</text>';
+    return out + '</svg>';
+  }
+  function rendreGraphe() {
+    var items = [];
+    if (vue === 'heure') {
+      var cnt = {}, h0 = 8, h1 = 18;
+      D.inscriptions.forEach(function (r) {
+        var d = new Date(r.horodatage);
+        if (jourCle(d) !== jourChoisi) return;
+        var h = d.getHours(); cnt[h] = (cnt[h] || 0) + 1;
+        if (h < h0) h0 = h; if (h > h1) h1 = h;
+      });
+      for (var h = h0; h <= h1; h++) items.push({ lib: h + 'h', v: cnt[h] || 0 });
+    } else {
+      var jours = joursDisponibles(), c2 = {};
+      D.inscriptions.forEach(function (r) { var k = jourCle(new Date(r.horodatage)); c2[k] = (c2[k] || 0) + 1; });
+      items = jours.map(function (j) { return { lib: jourLibelle(j), v: c2[j] || 0 }; });
+    }
+    $('#graphe').innerHTML = colonnes(items);
+  }
+
+  /* ---------- Filtres ---------- */
+  function rendreFiltres() {
+    // catégories
+    var menu = $('#f-cats-menu');
+    if (!menu.dataset.pret || menu.dataset.n !== String(D.categories.length)) {
+      menu.innerHTML = D.categories.map(function (c) {
+        return '<label><input type="checkbox" value="' + esc(c.code) + '"' + (F.cats[c.code] ? ' checked' : '') + '> ' + esc(c.libelle) + '</label>';
+      }).join('');
+      menu.dataset.pret = '1'; menu.dataset.n = String(D.categories.length);
+    }
+    majResumeCats();
+
+    // commerciaux (noms réellement présents + attribution)
+    var noms = {}; D.inscriptions.forEach(function (r) { if (r.commercial_nom) noms[r.commercial_nom] = 1; });
+    D.commerciaux.forEach(function (c) { noms[c.nom] = 1; });
+    var sc = $('#f-com'), v = F.com;
+    sc.innerHTML = '<option value="">Tous</option><option value="__aucune">Sans carte de visite</option><option value="__attribuer">Carte à attribuer</option>' +
+      Object.keys(noms).sort().map(function (n) { return '<option value="' + esc(n) + '">' + esc(n) + '</option>'; }).join('');
+    sc.value = v; if (sc.value !== v) { F.com = ''; sc.value = ''; }
+
+    // tablettes
+    var tabs = {}; D.inscriptions.forEach(function (r) { tabs[r.tablette] = 1; });
+    var st = $('#f-tab'), vt = F.tab;
+    st.innerHTML = '<option value="">Toutes</option>' + Object.keys(tabs).sort().map(function (n) { return '<option value="' + esc(n) + '">' + esc(n) + '</option>'; }).join('');
+    st.value = vt; if (st.value !== vt) { F.tab = ''; st.value = ''; }
+  }
+  function majResumeCats() {
+    var n = Object.keys(F.cats).filter(function (k) { return F.cats[k]; }).length;
+    $('#f-cats-txt').textContent = n === 0 ? 'Toutes' : (n === 1 ? libCat(Object.keys(F.cats).filter(function (k) { return F.cats[k]; })[0]) : n + ' catégories');
+  }
+  $('#f-cats-menu').addEventListener('change', function (e) {
+    F.cats[e.target.value] = e.target.checked; majResumeCats(); limite = 100; rendreListe();
+  });
+  document.addEventListener('click', function (e) { var d = $('#f-cats'); if (d.open && !d.contains(e.target)) d.open = false; });
+  $('#f-q').addEventListener('input', function () { F.q = this.value; limite = 100; rendreListe(); });
+  $('#f-com').addEventListener('change', function () { F.com = this.value; limite = 100; rendreListe(); });
+  $('#f-tab').addEventListener('change', function () { F.tab = this.value; limite = 100; rendreListe(); });
+  $('#f-du').addEventListener('change', function () { F.du = this.value; limite = 100; rendreListe(); });
+  $('#f-au').addEventListener('change', function () { F.au = this.value; limite = 100; rendreListe(); });
+  $('#f-reset').addEventListener('click', function () {
+    F = { q: '', cats: {}, com: '', tab: '', du: '', au: '' };
+    $('#f-q').value = ''; $('#f-du').value = ''; $('#f-au').value = '';
+    $$('#f-cats-menu input').forEach(function (i) { i.checked = false; });
+    limite = 100; rendreFiltres(); rendreListe();
+  });
+
+  function filtrer() {
+    var q = norm(F.q).trim(), qn = F.q.replace(/\D/g, '');
+    var du = F.du ? new Date(F.du).getTime() : null, au = F.au ? new Date(F.au).getTime() + 59999 : null;
+    var catsActives = Object.keys(F.cats).filter(function (k) { return F.cats[k]; });
+    return D.inscriptions.filter(function (r) {
+      if (catsActives.length && catsActives.indexOf(r.categorie) < 0) return false;
+      if (F.com === '__aucune') { if (r.carte_visite) return false; }
+      else if (F.com === '__attribuer') { if (!(r.carte_visite && !r.commercial_nom)) return false; }
+      else if (F.com && r.commercial_nom !== F.com) return false;
+      if (F.tab && r.tablette !== F.tab) return false;
+      var t = new Date(r.horodatage).getTime();
+      if (du !== null && t < du) return false;
+      if (au !== null && t > au) return false;
+      if (q) {
+        var hay = norm([r.nom_complet, r.email, r.societe, r.commentaires, libCat(r.categorie)].join(' '));
+        var okTel = qn.length >= 3 && r.telephone.replace(/\D/g, '').indexOf(qn) >= 0;
+        if (hay.indexOf(q) < 0 && !okTel) return false;
+      }
+      return true;
+    });
+  }
+
+  function cellCarte(r) {
+    if (!r.carte_visite) return '<span class="muted">Non</span>';
+    return r.commercial_nom ? '<span class="badge oui">Oui – ' + esc(r.commercial_nom) + '</span>' : '<span class="badge att">Oui – à attribuer</span>';
+  }
+
+  function rendreListe() {
+    var rows = filtrer(), total = D.inscriptions.length;
+    var visibles = rows.slice(0, limite);
+    $('#compte').textContent = rows.length === total
+      ? total + (total > 1 ? ' inscrits' : ' inscrit')
+      : rows.length + ' résultat' + (rows.length > 1 ? 's' : '') + ' sur ' + total;
+    $('#corps').innerHTML = visibles.map(function (r) {
+      return '<tr tabindex="0" data-id="' + esc(r.id) + '">' +
+        '<td class="nom">' + esc(r.nom_complet) + '</td>' +
+        '<td class="tel">' + esc(r.telephone) + '</td>' +
+        '<td>' + (r.email ? esc(r.email) : '<span class="muted">—</span>') + '</td>' +
+        '<td>' + esc(libCat(r.categorie)) + '</td>' +
+        '<td>' + (r.societe ? esc(r.societe) : '<span class="muted">—</span>') + '</td>' +
+        '<td>' + cellCarte(r) + '</td>' +
+        '<td class="date">' + dateHeure(r.horodatage) + '</td>' +
+        '<td class="com"><div title="' + esc(r.commentaires) + '">' + (r.commentaires ? esc(r.commentaires.replace(/\s+/g, ' ')) : '<span class="muted">—</span>') + '</div></td></tr>';
+    }).join('');
+    var vide = $('#vide');
+    vide.hidden = rows.length > 0;
+    vide.textContent = total ? 'Aucun résultat avec ces filtres.' : 'Aucune inscription pour l’instant. Celles enregistrées sur les tablettes apparaîtront ici.';
+    var reste = rows.length - visibles.length;
+    $('#plus').hidden = reste <= 0;
+    $('#btn-plus').textContent = 'Afficher plus (' + reste + ' restant' + (reste > 1 ? 's' : '') + ')';
+  }
+  $('#btn-plus').addEventListener('click', function () { limite += 200; rendreListe(); });
+
+  /* ---------- Détail ---------- */
+  var dlgDetail = $('#dlg-detail');
+  function ouvrirDetail(id) {
+    var r = D.inscriptions.filter(function (x) { return x.id === id; })[0];
+    if (!r) return;
+    courant = r;
+    $('#dd-titre').textContent = r.nom_complet;
+    var lignes = [
+      ['Téléphone', r.telephone], ['Email', r.email || 'Non renseigné'], ['Catégorie', libCat(r.categorie)],
+      ['Société', r.societe || 'Non renseigné'], ['Commentaires', r.commentaires || 'Aucun commentaire'],
+      ['Carte de visite', r.carte_visite ? 'Oui – ' + (r.commercial_nom || 'commercial à attribuer') : 'Non'],
+      ['Inscrit le', dateHeure(r.horodatage)], ['Tablette', r.tablette]
+    ];
+    $('#dd-liste').innerHTML = lignes.map(function (l) { return '<div><dt>' + l[0] + '</dt><dd>' + esc(l[1]) + '</dd></div>'; }).join('');
+    var b = $('#dd-suppr'); b.textContent = 'Supprimer cette inscription'; b.classList.remove('confirme');
+    $('#dd-err').textContent = '';
+    dlgDetail.showModal();
+  }
+  $('#corps').addEventListener('click', function (e) { var tr = e.target.closest('tr'); if (tr) ouvrirDetail(tr.dataset.id); });
+  $('#corps').addEventListener('keydown', function (e) { if (e.key === 'Enter') { var tr = e.target.closest('tr'); if (tr) ouvrirDetail(tr.dataset.id); } });
+  $('#dd-fermer').addEventListener('click', function () { dlgDetail.close(); });
+  $('#dd-suppr').addEventListener('click', function () {
+    var b = this;
+    if (!b.classList.contains('confirme')) { b.classList.add('confirme'); b.textContent = 'Confirmer la suppression'; return; }
+    api('/api/inscriptions/' + encodeURIComponent(courant.id), { method: 'DELETE' }).then(function () {
+      dlgDetail.close(); return charger();
+    }).catch(function (e) { $('#dd-err').textContent = e.message; });
+  });
+
+  /* ---------- Export CSV ---------- */
+  function cellule(v, tel) {
+    v = String(v == null ? '' : v).replace(/\r?\n/g, ' ').trim();
+    if (/^[=+\-@\t]/.test(v)) v = (tel ? ' ' : "'") + v;      // évite l'exécution de formules dans Excel
+    return '"' + v.replace(/"/g, '""') + '"';
+  }
+  $('#btn-export').addEventListener('click', function () {
+    var rows = filtrer().slice().reverse();  // du plus ancien au plus récent
+    var ent = ['Date', 'Heure', 'Nom complet', 'Téléphone', 'Email', 'Catégorie', 'Société', 'Carte de visite', 'Commercial', 'Commentaires', 'Tablette'];
+    var lignes = [ent.map(function (x) { return cellule(x); }).join(';')];
+    rows.forEach(function (r) {
+      var d = new Date(r.horodatage);
+      lignes.push([
+        cellule(pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear()), cellule(heureTexte(d)),
+        cellule(r.nom_complet), cellule(r.telephone, true), cellule(r.email), cellule(libCat(r.categorie)), cellule(r.societe),
+        cellule(r.carte_visite ? 'Oui' : 'Non'), cellule(r.carte_visite ? (r.commercial_nom || 'À attribuer') : ''),
+        cellule(r.commentaires), cellule(r.tablette)
+      ].join(';'));
+    });
+    var blob = new Blob(['\uFEFF' + lignes.join('\r\n')], { type: 'text/csv;charset=utf-8' });
+    var n = new Date(), a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'salon-bnetd-inscrits-' + jourCle(n) + '_' + pad(n.getHours()) + pad(n.getMinutes()) + '.csv';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
+  });
+
+  /* ---------- Réglages ---------- */
+  var dlgReg = $('#dlg-reglages');
+  function rendreCommerciaux() {
+    var cartes = {}; D.inscriptions.forEach(function (r) { if (r.commercial_id) cartes[r.commercial_id] = (cartes[r.commercial_id] || 0) + 1; });
+    $('#rg-commerciaux').innerHTML = D.commerciaux.length ? D.commerciaux.map(function (c) {
+      var n = cartes[c.id] || 0;
+      return '<div class="comm" data-id="' + esc(c.id) + '"><div><div class="nom">' + esc(c.nom) + '</div><div class="sub">' +
+        (c.fonction ? esc(c.fonction) + ', ' : '') + n + ' carte' + (n > 1 ? 's' : '') + ' demandée' + (n > 1 ? 's' : '') + '</div></div>' +
+        '<label class="interrupteur"><input type="checkbox" data-act="actif"' + (c.actif ? ' checked' : '') + '> Actif</label>' +
+        '<button class="btn danger petit" type="button" data-act="suppr">Supprimer</button></div>';
+    }).join('') : '<p class="aide">Aucun commercial pour l’instant.</p>';
+  }
+  $('#btn-reglages').addEventListener('click', function () {
+    var s = D.salon || {};
+    $('#s-nom').value = s.nom || ''; $('#s-lieu').value = s.lieu || ''; $('#s-debut').value = s.debut || ''; $('#s-fin').value = s.fin || '';
+    $('#s-err').textContent = ''; $('#s-ok').textContent = ''; $('#c-err').textContent = '';
+    rendreCommerciaux(); dlgReg.showModal();
+  });
+  $('#rg-fermer').addEventListener('click', function () { dlgReg.close(); });
+  $('#form-salon').addEventListener('submit', function (e) {
+    e.preventDefault();
+    $('#s-err').textContent = ''; $('#s-ok').textContent = '';
+    api('/api/salon', { method: 'PUT', body: JSON.stringify({ nom: $('#s-nom').value, lieu: $('#s-lieu').value, debut: $('#s-debut').value, fin: $('#s-fin').value }) })
+      .then(function () { $('#s-ok').textContent = 'Enregistré. Les tablettes affichent le nouveau salon au prochain rafraîchissement (moins de 2 minutes).'; return charger(); })
+      .catch(function (x) { $('#s-err').textContent = x.message; });
+  });
+  $('#form-com').addEventListener('submit', function (e) {
+    e.preventDefault(); $('#c-err').textContent = '';
+    api('/api/commerciaux', { method: 'POST', body: JSON.stringify({ nom: $('#c-nom').value, fonction: $('#c-fonction').value }) })
+      .then(function () { $('#c-nom').value = ''; $('#c-fonction').value = ''; return charger(); })
+      .then(rendreCommerciaux)
+      .catch(function (x) { $('#c-err').textContent = x.message; });
+  });
+  $('#rg-commerciaux').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-act="suppr"]'); if (!b) return;
+    var id = b.closest('.comm').dataset.id;
+    if (!b.classList.contains('confirme')) { b.classList.add('confirme'); b.textContent = 'Confirmer'; return; }
+    api('/api/commerciaux/' + encodeURIComponent(id), { method: 'DELETE' }).then(charger).then(rendreCommerciaux)
+      .catch(function (x) { $('#c-err').textContent = x.message; });
+  });
+  $('#rg-commerciaux').addEventListener('change', function (e) {
+    var i = e.target.closest('[data-act="actif"]'); if (!i) return;
+    var id = i.closest('.comm').dataset.id;
+    api('/api/commerciaux/' + encodeURIComponent(id), { method: 'PATCH', body: JSON.stringify({ actif: i.checked }) })
+      .then(charger).then(rendreCommerciaux)
+      .catch(function (x) { $('#c-err').textContent = x.message; i.checked = !i.checked; });
+  });
+
+  /* ---------- Démarrage ---------- */
+  try { creds = sessionStorage.getItem('bnetd_admin'); } catch (e) { creds = null; }
+  if (creds) demarrer();
+})();
+</script>
+</body>
+</html>

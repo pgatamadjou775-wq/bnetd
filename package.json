@@ -1,0 +1,9 @@
+{
+  "name": "salon-bnetd",
+  "version": "1.0.0",
+  "description": "Enregistrement des visiteurs sur le stand du BNETD — tablettes + back-office",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "engines": { "node": ">=18" },
+  "private": true
+}
